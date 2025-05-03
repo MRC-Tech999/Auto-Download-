@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Download Pro</title>
+    <title>Auto Download Pro - By Marc-Tech</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -124,7 +124,7 @@
     </div>
 
     <div class="copyright">
-        <p>&copy; 2025 <span>Tous droits réservés.</span> Créé par <span>MARC-TECH</span></p>
+        <p>&copy; 2025 <span>Tous droits réservés.</span> Créé par <span>Marc-Tech</span></p>
     </div>
 
     <script>
@@ -148,6 +148,33 @@
             return await response.json();
         }
 
+        // Force le téléchargement
+        async function forceDownload(fileUrl, fileName) {
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName;
+
+            document.body.appendChild(a);
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Trouver le nom du réseau social pour personnaliser le fichier
+        function detectPlatform(url) {
+            if (url.includes('tiktok')) return 'tiktok';
+            if (url.includes('instagram')) return 'instagram';
+            if (url.includes('facebook')) return 'facebook';
+            if (url.includes('youtube')) return 'youtube';
+            return 'social';
+        }
+
         // Télécharger Vidéo
         document.getElementById("downloadVideoBtn").addEventListener("click", async () => {
             const url = document.getElementById("videoUrl").value;
@@ -159,7 +186,8 @@
                 const videoUrl = data.result.media.find(m => m.type === "video")?.url;
                 if (!videoUrl) return alert("Vidéo non trouvée !");
                 
-                window.open(videoUrl, "_blank");
+                const platform = detectPlatform(url);
+                await forceDownload(videoUrl, `autodownload_by_Marc-Tech_${platform}_video.mp4`);
             } catch (err) {
                 console.error(err);
                 alert("Erreur lors du téléchargement.");
@@ -177,7 +205,8 @@
                 const audioUrl = data.result.media.find(m => m.type === "audio")?.url;
                 if (!audioUrl) return alert("Audio non trouvé !");
                 
-                window.open(audioUrl, "_blank");
+                const platform = detectPlatform(url);
+                await forceDownload(audioUrl, `autodownload_by_Marc-Tech_${platform}_audio.mp3`);
             } catch (err) {
                 console.error(err);
                 alert("Erreur lors du téléchargement.");
