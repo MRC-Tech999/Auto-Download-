@@ -109,13 +109,6 @@
             <input type="url" id="videoUrl" placeholder="Collez le lien de la vidéo ici" required />
             <button id="downloadBtn">Télécharger</button>
         </div>
-
-        <div>
-            <h2>Voir les abonnés TikTok</h2>
-            <input type="text" id="tiktokUsername" placeholder="Entrez le nom d'utilisateur TikTok" required />
-            <button id="followersBtn">Voir les abonnés</button>
-            <div id="followersResult"></div>
-        </div>
     </div>
 
     <div class="footer">
@@ -128,7 +121,7 @@
     </div>
 
     <script>
-        // Bouton pour télécharger une vidéo
+        // Bouton pour télécharger la vidéo
         document.getElementById("downloadBtn").addEventListener("click", async function() {
             const url = document.getElementById("videoUrl").value;
             if (!url) {
@@ -136,6 +129,7 @@
                 return;
             }
 
+            // Envoie une requête POST à notre backend
             const response = await fetch('/download', {
                 method: 'POST',
                 headers: {
@@ -149,36 +143,6 @@
                 window.location.href = data.downloadUrl; // Lancer le téléchargement
             } else {
                 alert("Erreur lors du téléchargement.");
-            }
-        });
-
-        // Bouton pour voir les abonnés TikTok
-        document.getElementById("followersBtn").addEventListener("click", async function() {
-            const username = document.getElementById("tiktokUsername").value;
-            if (!username) {
-                alert("Veuillez entrer un nom d'utilisateur TikTok.");
-                return;
-            }
-
-            const response = await fetch(`https://tiktok-scrapper-videos-music-challenges-downloader.p.rapidapi.com/user/id/${username}/followers`, {
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-host': 'tiktok-scrapper-videos-music-challenges-downloader.p.rapidapi.com',
-                    'x-rapidapi-key': 'ab42dda446mshde4ba65d25b85fdp13b83ejsn3965c0519b7d'
-                }
-            });
-
-            const data = await response.json();
-            if (data && data.followers) {
-                const followers = data.followers;
-                let followersList = "<ul>";
-                followers.forEach(follower => {
-                    followersList += `<li>${follower.username}</li>`;
-                });
-                followersList += "</ul>";
-                document.getElementById("followersResult").innerHTML = followersList;
-            } else {
-                document.getElementById("followersResult").innerHTML = "Aucun abonné trouvé.";
             }
         });
     </script>
