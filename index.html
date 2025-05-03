@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Download</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #00B0B9, #4CC9D9);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            animation: gradientAnimation 5s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background: linear-gradient(135deg, #00B0B9, #4CC9D9);
+            }
+            50% {
+                background: linear-gradient(135deg, #4CC9D9, #00B0B9);
+            }
+            100% {
+                background: linear-gradient(135deg, #00B0B9, #4CC9D9);
+            }
+        }
+
+        h1 {
+            font-size: 3em;
+            animation: titleAnimation 3s ease-in-out infinite;
+        }
+
+        @keyframes titleAnimation {
+            0%, 100% {
+                color: white;
+            }
+            50% {
+                color: #FFFB00;
+            }
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 60%;
+        }
+
+        input[type="url"] {
+            padding: 10px;
+            width: 60%;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #FFFB00;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 1.2em;
+        }
+
+        button:hover {
+            background-color: #FFD700;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            text-align: center;
+            font-size: 1em;
+            width: 100%;
+            color: white;
+        }
+
+        .footer a {
+            color: #FFFB00;
+            text-decoration: none;
+        }
+
+        .footer img {
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Auto Download</h1>
+        <p>Bienvenue sur le site de téléchargement automatique de vidéos depuis diverses plateformes. Il suffit de coller le lien et de télécharger !</p>
+
+        <div>
+            <h2>Téléchargez une vidéo</h2>
+            <input type="url" id="videoUrl" placeholder="Collez le lien de la vidéo ici" required />
+            <button id="downloadBtn">Télécharger</button>
+        </div>
+
+        <div>
+            <h2>Voir les abonnés TikTok</h2>
+            <input type="text" id="tiktokUsername" placeholder="Entrez le nom d'utilisateur TikTok" required />
+            <button id="followersBtn">Voir les abonnés</button>
+            <div id="followersResult"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Tous droits réservés. Créé par <strong>MARC-TECH</strong></p>
+        <p>Suivez-moi sur Instagram: 
+            <a href="https://www.instagram.com/J.m.h.2024" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo">
+            </a>
+        </p>
+    </div>
+
+    <script>
+        // Bouton pour télécharger une vidéo
+        document.getElementById("downloadBtn").addEventListener("click", async function() {
+            const url = document.getElementById("videoUrl").value;
+            if (!url) {
+                alert("Veuillez entrer un lien valide !");
+                return;
+            }
+
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                window.location.href = data.downloadUrl; // Lancer le téléchargement
+            } else {
+                alert("Erreur lors du téléchargement.");
+            }
+        });
+
+        // Bouton pour voir les abonnés TikTok
+        document.getElementById("followersBtn").addEventListener("click", async function() {
+            const username = document.getElementById("tiktokUsername").value;
+            if (!username) {
+                alert("Veuillez entrer un nom d'utilisateur TikTok.");
+                return;
+            }
+
+            const response = await fetch(`https://tiktok-scrapper-videos-music-challenges-downloader.p.rapidapi.com/user/id/${username}/followers`, {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-host': 'tiktok-scrapper-videos-music-challenges-downloader.p.rapidapi.com',
+                    'x-rapidapi-key': 'ab42dda446mshde4ba65d25b85fdp13b83ejsn3965c0519b7d'
+                }
+            });
+
+            const data = await response.json();
+            if (data && data.followers) {
+                const followers = data.followers;
+                let followersList = "<ul>";
+                followers.forEach(follower => {
+                    followersList += `<li>${follower.username}</li>`;
+                });
+                followersList += "</ul>";
+                document.getElementById("followersResult").innerHTML = followersList;
+            } else {
+                document.getElementById("followersResult").innerHTML = "Aucun abonné trouvé.";
+            }
+        });
+    </script>
+
+</body>
+</html>
