@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Download Pro - By Marc-Tech</title>
+    <title>Auto Download Pro By Marc-Tech</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -103,11 +103,11 @@
 <body>
 
     <div class="container">
-        <h1>Auto Download</h1>
+        <h1>AutoDownload By Marc-Tech</h1>
         <p>Téléchargez vos vidéos <b>sans filigrane</b> ou en <b>audio MP3</b> depuis TikTok, Instagram, etc.</p>
 
         <div>
-            <h2>Coller le lien ci-dessous</h2>
+            <h2>Collez le lien ci-dessous</h2>
             <input type="url" id="videoUrl" placeholder="Exemple : https://www.tiktok.com/..." required />
             <br/>
             <button id="downloadVideoBtn">Télécharger Vidéo</button>
@@ -124,11 +124,11 @@
     </div>
 
     <div class="copyright">
-        <p>&copy; 2025 <span>Tous droits réservés.</span> Créé par <span>Marc-Tech</span></p>
+        <p>&copy; 2025 <span>Tous droits réservés.</span> Créé par <span>MARC-TECH</span></p>
     </div>
 
     <script>
-        const apiKey = 'ab42dda446mshde4ba65d25b85fdp13b83ejsn3965c0519b7d'; // Ta clé API
+        const apiKey = 'ab42dda446mshde4ba65d25b85fdp13b83ejsn3965c0519b7d'; // Ta clé API RapidAPI
 
         async function fetchDownloadLink(url) {
             const response = await fetch('https://auto-download-all-in-one.p.rapidapi.com/v1/social/autolink', {
@@ -148,31 +148,14 @@
             return await response.json();
         }
 
-        // Force le téléchargement
-        async function forceDownload(fileUrl, fileName) {
-            const response = await fetch(fileUrl);
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-
+        // Fonction pour télécharger un fichier
+        function telechargerFichier(url, nomFichier) {
             const a = document.createElement('a');
-            a.style.display = 'none';
             a.href = url;
-            a.download = fileName;
-
+            a.download = nomFichier;
             document.body.appendChild(a);
             a.click();
-
-            window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
-        }
-
-        // Trouver le nom du réseau social pour personnaliser le fichier
-        function detectPlatform(url) {
-            if (url.includes('tiktok')) return 'tiktok';
-            if (url.includes('instagram')) return 'instagram';
-            if (url.includes('facebook')) return 'facebook';
-            if (url.includes('youtube')) return 'youtube';
-            return 'social';
         }
 
         // Télécharger Vidéo
@@ -186,8 +169,7 @@
                 const videoUrl = data.result.media.find(m => m.type === "video")?.url;
                 if (!videoUrl) return alert("Vidéo non trouvée !");
                 
-                const platform = detectPlatform(url);
-                await forceDownload(videoUrl, `autodownload_by_Marc-Tech_${platform}_video.mp4`);
+                telechargerFichier(videoUrl, "video.mp4");
             } catch (err) {
                 console.error(err);
                 alert("Erreur lors du téléchargement.");
@@ -205,8 +187,7 @@
                 const audioUrl = data.result.media.find(m => m.type === "audio")?.url;
                 if (!audioUrl) return alert("Audio non trouvé !");
                 
-                const platform = detectPlatform(url);
-                await forceDownload(audioUrl, `autodownload_by_Marc-Tech_${platform}_audio.mp3`);
+                telechargerFichier(audioUrl, "audio.mp3");
             } catch (err) {
                 console.error(err);
                 alert("Erreur lors du téléchargement.");
