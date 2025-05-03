@@ -3,170 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Download - Marc-Tech</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #00B0B9, #4CC9D9);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: white;
-        }
-
-        h1 {
-            font-size: 3em;
-            animation: titleAnimation 3s ease-in-out infinite;
-        }
-
-        @keyframes titleAnimation {
-            0%, 100% { color: white; }
-            50% { color: #FFFB00; }
-        }
-
-        .container {
-            text-align: center;
-            padding: 30px;
-            border-radius: 15px;
-            background-color: rgba(0, 0, 0, 0.6);
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-
-        input[type="url"] {
-            padding: 15px;
-            width: 80%;
-            margin-top: 10px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            outline: none;
-        }
-
-        button {
-            padding: 12px 25px;
-            background-color: #FFFB00;
-            color: #333;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 10px 5px 0 5px;
-            font-size: 1.1em;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #FFD700;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.9em;
-            color: white;
-        }
-
-        .footer a {
-            color: #FFFB00;
-            text-decoration: none;
-        }
-
-        .footer img {
-            width: 30px;
-            height: 30px;
-            margin-left: 10px;
-        }
-
-        .copyright {
-            font-size: 0.8em;
-            color: #ccc;
-            margin-top: 15px;
-        }
-
-        .copyright span {
-            color: #FFFB00;
-        }
-    </style>
+    <title>Télécharger Vidéo TikTok sans filigrane</title>
 </head>
 <body>
+    <h1>Télécharger Vidéo TikTok sans Filigrane</h1>
 
-    <div class="container">
-        <h1>Auto Download</h1>
-        <p>Téléchargez vos vidéos TikTok sans filigrane</p>
+    <form id="downloadForm">
+        <label for="videoUrl">Entrez l'URL de la vidéo TikTok:</label><br>
+        <input type="url" id="videoUrl" name="videoUrl" placeholder="https://www.tiktok.com/..." required><br><br>
+        <button type="submit">Télécharger</button>
+    </form>
 
-        <div>
-            <h2>Coller le lien ci-dessous</h2>
-            <input type="url" id="videoUrl" placeholder="Exemple : https://vt.tiktok.com/..." required />
-            <br/>
-            <button id="downloadBtn">Télécharger</button>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Suivez-moi sur Instagram: 
-            <a href="https://www.instagram.com/J.m.h.2024" target="_blank">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo">
-            </a>
-        </p>
-    </div>
-
-    <div class="copyright">
-        <p>&copy; 2025 <span>Tous droits réservés.</span> Créé par <span>MARC-TECH</span></p>
-    </div>
+    <h2>Résultat:</h2>
+    <div id="downloadLink"></div>
 
     <script>
-        const apiKey = 'ab42dda446mshde4ba65d25b85fdp13b83ejsn3965c0519b7d';
+        document.getElementById('downloadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        async function fetchDownloadLink(url) {
-            const response = await fetch('https://download-social-media.p.rapidapi.com/autolink?url=' + encodeURIComponent(url), {
-                method: 'POST',
+            // Récupérer l'URL de la vidéo TikTok
+            const videoUrl = document.getElementById('videoUrl').value;
+
+            // URL de l'API avec l'URL vidéo encodée
+            const apiUrl = `https://tiktok-video-downloader-without-watermark.p.rapidapi.com/?videourl=${encodeURIComponent(videoUrl)}`;
+
+            // Requête API avec les en-têtes
+            fetch(apiUrl, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-rapidapi-host': 'download-social-media.p.rapidapi.com',
-                    'x-rapidapi-key': apiKey
-                },
-                body: JSON.stringify({ url: url })
+                    'x-rapidapi-host': 'tiktok-video-downloader-without-watermark.p.rapidapi.com',
+                    'x-rapidapi-key': 'ab42dda446mshde4ba65d25b85fdp13b83ejsn3965c0519b7d'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.downloadUrl) {
+                    // Afficher le lien de téléchargement
+                    document.getElementById('downloadLink').innerHTML = `<a href="${data.downloadUrl}" target="_blank">Cliquez ici pour télécharger la vidéo</a>`;
+                } else {
+                    document.getElementById('downloadLink').innerText = 'Erreur: Impossible de récupérer la vidéo.';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                document.getElementById('downloadLink').innerText = 'Erreur lors de la récupération de la vidéo.';
             });
-
-            if (!response.ok) {
-                throw new Error('Erreur API');
-            }
-
-            return await response.json();
-        }
-
-        function telechargerFichier(url, nomFichier) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = nomFichier;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        document.getElementById("downloadBtn").addEventListener("click", async () => {
-            const url = document.getElementById("videoUrl").value;
-            if (!url) return alert("Veuillez entrer un lien valide !");
-            
-            try {
-                const data = await fetchDownloadLink(url);
-
-                // Prend la première vidéo trouvée (sans filigrane en général)
-                const video = data.links.find(m => m.type === "video");
-                if (!video) return alert("Vidéo non trouvée !");
-                
-                telechargerFichier(video.url, "video.mp4");
-            } catch (err) {
-                console.error(err);
-                alert("Erreur lors du téléchargement.");
-            }
         });
     </script>
-
 </body>
 </html>
